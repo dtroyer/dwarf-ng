@@ -146,9 +146,15 @@ def _route_images_id(image_id):
 def _route_images():
     """
     Route:  /v1/images
-    Method: GET
+    Method: GET, POST
     """
     utils.show_request(bottle.request)
+
+    # glance image-list
+    # This isn't quite right, the returned attributes should be shorter,
+    # but this is Glance, so whatever
+    if bottle.request.method == 'GET':
+        return {'images': IMAGES.list()}
 
     # Parse the HTTP header
     image_md = _from_headers(bottle.request.headers)
@@ -168,7 +174,7 @@ class _ImageApiServer(api_server.ApiServer):
                        method=('GET', 'HEAD', 'DELETE', 'PUT'),
                        callback=_route_images_id)
         self.app.route(('/v1/images', '//v1/images'),
-                       method='POST',
+                       method=('GET', 'POST'),
                        callback=_route_images)
 
 
