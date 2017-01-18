@@ -14,6 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Destination branch for build
+BUILD=local
+BRANCHES=flavor-extra \
+	image-marker \
+	server-metadata \
+	compute-network \
+	dt-virt-name \
+	dt-makefile
+
+VENV_DIR := .dwarf
+
 tox:
 	tox
 
@@ -50,13 +61,13 @@ release:
 	) > ChangeLog.new
 	mv ChangeLog.new ChangeLog
 	# Update debian/changelog.in
-	debian/bin/update-changelog.in $${v#v}
+	#debian/bin/update-changelog.in $${v#v}
 	# Update snap/snapcraft.yaml
-	sed -i -e "s/^version: .*$$/version: '$${v#v}'/" snap/snapcraft.yaml
+	#sed -i -e "s/^version: .*$$/version: '$${v#v}'/" snap/snapcraft.yaml
 	# commit and tag
-	git add ChangeLog debian/changelog.in snap/snapcraft.yaml
-	git commit -s -m "$${v}"
-	git tag -s -m "$${v}" $${v}
+	git add ChangeLog
+	git commit -m "$${v}"
+	git tag -m "$${v}" $${v}
 
 debian:
 	! [ -d build-debian ] || rm -rf build-debian
@@ -68,3 +79,51 @@ debian:
 	rm -rf build-debian
 
 .PHONY: tox pep8 pylint tests coverage clean deepclean tgz release debian
+
+build:
+	git checkout master
+	git branch -D $(BUILD) || true
+	git checkout -b $(BUILD)
+	for i in $(BRANCHES); do \
+		echo "Merging $$i"; \
+		git checkout $$i; \
+		git checkout -; \
+		git merge --no-edit $$i; \
+	done
+
+
+run:
+	sudo su -s /bin/sh -c './bin/dwarf -s' dwarf
+
+init:
+	pid=$$(ps -ef | grep './bin/dwarf' | grep sudo | grep -v grep | \
+	       awk '{ print $$2 }') ; \
+	    if [ "$${pid}" != "" ] ; then \
+	        sudo kill $${pid} && \
+	        sleep 5 ; \
+	    fi
+	sudo su -s /bin/sh -c './bin/dwarf-manage db-delete' dwarf
+	sudo su -s /bin/sh -c './bin/dwarf-manage db-init' dwarf
+
+$(VENV_DIR):
+	virtualenv $(VENV_DIR)
+
+venv: $(VENV_DIR)
+	$(VENV_DIR)/bin/pip install -r requirements.txt
+	$(VENV_DIR)/bin/pip install .
+
+venv-dev: $(VENV_DIR)
+	$(VENV_DIR)/bin/pip install -e .
+
+vrun: venv
+	sudo su -s /bin/sh -c '$(VENV_DIR)/bin/dwarf -s' dwarf
+
+vinit: venv
+	pid=$$(ps -ef | grep '$(VENV_DIR)/bin/dwarf' | grep sudo | grep -v grep | \
+	       awk '{ print $$2 }') ; \
+	    if [ "$${pid}" != "" ] ; then \
+	        sudo kill $${pid} && \
+	        sleep 5 ; \
+	    fi
+	sudo su -s /bin/sh -c '$(VENV_DIR)/bin/dwarf-manage db-delete' dwarf
+	sudo su -s /bin/sh -c '$(VENV_DIR)/bin/dwarf-manage db-init' dwarf
