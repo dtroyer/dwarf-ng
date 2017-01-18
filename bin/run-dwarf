@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Assume this script is in the bin/ directory of a venv
+VENV_DIR=$(cd $(dirname "$0")/.. && pwd)
+RUN_AS=dwarf
+
+if [[ "$1" == "init" ]]; then
+	# Create the dwarf group and user
+	if ! getent group $RUN_AS >/dev/null ; then
+		sudo groupadd -r $RUN_AS
+	fi
+	if ! getent passwd $RUN_AS >/dev/null ; then
+		sudo useradd -r -g $RUN_AS -G $RUN_AS,libvirt -d /var/lib/dwarf \
+			-s /sbin/nologin $RUN_AS
+	fi
+
+	# Create the persistent working directory
+	sudo mkdir -p /var/lib/dwarf/instances/_base
+	sudo mkdir -p /var/lib/dwarf/images
+	sudo chown -R $RUN_AS:$RUN_AS /var/lib/dwarf
+
+	# Copy the sudoer file
+	##cp $VENV_DIR/etc/sudoers.d/dwarf /etc/sudoers.d/dwarf
+	cat <<EOF | sudo tee /etc/sudoers.d/dwarf
+Cmnd_Alias DWARFCMDS = /bin/chown
+
+$RUN_AS ALL = (root) NOPASSWD: SETENV: DWARFCMDS
+EOF
+	sudo chown root:root /etc/sudoers.d/dwarf
+	sudo chmod 440 /etc/sudoers.d/dwarf
+
+	# Initialize the database
+	if ! [ -e /var/lib/dwarf/dwarf.db ] ; then
+		sudo su -s /bin/sh -c "${VENV_DIR}/bin/dwarf-manage db-init" $RUN_AS
+	fi
+
+fi
+
+sudo su -s /bin/sh -c "${VENV_DIR}/bin/dwarf -s" $RUN_AS
