@@ -156,7 +156,12 @@ def _route_images_id(image_id):
 
     # glance image-list
     if image_id == 'detail' and bottle.request.method == 'GET':
-        return api_response.images_list(IMAGES.list())
+        if (bottle.request.query.get('marker', None) is None):
+            # We don't 'do' marker, so return it all on the first call
+            return api_response.images_list(IMAGES.list())
+        else:
+            # When the client wants more, tell it we're done
+            return api_response.images_list([])
 
     # glance image-show <image_id>
     if image_id != 'detail' and bottle.request.method == 'HEAD':
