@@ -97,10 +97,10 @@ SERVER = ('id', 'name')
 SERVER_INFO = DETAILS + ('addresses', 'config_drive', 'flavor', 'id', 'image',
                          'key_name', 'name', 'status')
 SERVER_LINKS = {"links": [{"href": "", "rel": "self"}]}
-
+SERVER_MORE = {'metadata': {}}
 
 def servers_boot(data):
-    return {"server": template(SERVER_INFO, data)}
+    return {"server": template(SERVER_INFO, data, add=SERVER_MORE)}
 
 
 def servers_console_log(data):
@@ -111,8 +111,8 @@ def servers_list(data, details=True):
     if details:
         return {"servers": template(SERVER_INFO, data)}
     else:
-        return {"servers": template(SERVER, data)}
+        return {"servers": template(SERVER, data, add=SERVER_MORE)}
 
 
 def servers_show(data):
-    return {"server": template(SERVER_INFO, data)}
+    return {"server": template(SERVER_INFO, data, add=SERVER_MORE)}
