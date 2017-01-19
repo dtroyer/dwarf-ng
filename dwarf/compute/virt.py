@@ -304,7 +304,7 @@ class Controller(object):
         self._connect()
         try:
             # Check if the network already exists
-            net = self.libvirt.networkLookupByName('dwarf')
+            net = self.libvirt.networkLookupByName(CONF.libvirt_network_name)
         except libvirt.libvirtError as e:
             if e.get_error_code() != libvirt.VIR_ERR_NO_NETWORK:
                 # Unexpected error
@@ -343,7 +343,7 @@ class Controller(object):
         """
         LOG.info('get_dhcp_lease(server=%s)', server)
 
-        net = self.libvirt.networkLookupByName('dwarf')
+        net = self.libvirt.networkLookupByName(CONF.libvirt_network_name)
         lease = net.DHCPLeases(mac=server['mac_address'])
         if len(lease) == 1:
             return {'ip': lease[0]['ipaddr']}
