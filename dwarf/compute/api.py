@@ -107,6 +107,18 @@ def _route_flavors_id(dummy_tenant_id, flavor_id):
 
 
 @exception.catchall
+def _route_flavorsx_id(dummy_tenant_id, flavor_id):
+    """
+    Route:  /v1.1/<dummy_tenant_id>/flavors/<flavor_id>/os-extra-specs
+    Method: GET
+    """
+    utils.show_request(bottle.request)
+
+    # nova flavor-show <flavor_id>
+    return api_response.flavorsx_show(FLAVORS.show(flavor_id))
+
+
+@exception.catchall
 def _route_flavors(dummy_tenant_id):
     """
     Route:  /v1.1/<dummy_tenant_id>/flavors
@@ -304,6 +316,9 @@ class ComputeApiServer(api_server.ApiServer):
         self.app.route('/v1.1/<dummy_tenant_id>/flavors/<flavor_id>',
                        method=('GET', 'DELETE'),
                        callback=_route_flavors_id)
+        self.app.route('/v1.1/<dummy_tenant_id>/flavors/<flavor_id>/os-extra_specs',
+                       method=('GET'),
+                       callback=_route_flavorsx_id)
         self.app.route('/v1.1/<dummy_tenant_id>/flavors',
                        method=('GET', 'POST'),
                        callback=_route_flavors)

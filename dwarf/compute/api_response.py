@@ -27,6 +27,7 @@ DETAILS = ('created_at', 'deleted', 'deleted_at', 'updated_at')
 FLAVOR = ('id', 'name')
 FLAVOR_INFO = FLAVOR + ('disk', 'ram', 'vcpus')
 FLAVOR_LINKS = {"links": [{"href": "", "rel": "self"}]}
+FLAVOR_LINKS.update({'extra_specs': None})
 
 
 def flavors_create(data):
@@ -42,6 +43,13 @@ def flavors_list(data, details=True):
 
 def flavors_show(data):
     return {"flavor": template(FLAVOR_INFO, data, add=FLAVOR_LINKS)}
+
+
+# -----------------------------------------------------------------------------
+# Flavors API responses
+
+def flavorsx_show(data):
+    return {"extra_specs": {}}
 
 
 # -----------------------------------------------------------------------------
