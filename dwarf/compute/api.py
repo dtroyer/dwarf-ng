@@ -67,6 +67,18 @@ def _route_version():
 # Bottle Flavors API routes
 
 @exception.catchall
+def _route_flavors_id_extra(flavor_id):
+    """
+    Route:  /compute/v2.0/flavors/<flavor_id>/os-extra_specs
+    Method: GET
+    """
+    utils.show_request(bottle.request)
+
+    # nova flavor-show <flavor_id>
+    return api_response.show_flavor_extra(FLAVORS.show(flavor_id))
+
+
+@exception.catchall
 def _route_flavors_id(flavor_id):
     """
     Route:  /compute/v2.0/flavors/<flavor_id>
@@ -240,6 +252,9 @@ def set_routes(app):
     app.route('/compute/v2.0/servers/<server_id>/action',
               method='POST',
               callback=_route_servers_id_action)
+    app.route('/compute/v2.0/flavors/<flavor_id>/os-extra_specs',
+              method=('GET'),
+              callback=_route_flavors_id_extra)
     app.route('/compute/v2.0/flavors/<flavor_id>',
               method=('GET', 'DELETE'),
               callback=_route_flavors_id)

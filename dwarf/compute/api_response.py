@@ -67,6 +67,10 @@ FLAVOR = """{
     "name": "{{name}}"
 }"""
 
+FLAVOR_EXTRA = """{
+    "extra_specs": {}
+}"""
+
 
 def create_flavor(data):
     return {'flavor': utils.json_render(FLAVOR, data, _details=True)}
@@ -79,6 +83,10 @@ def list_flavors(data, details=True):
 
 def show_flavor(data):
     return {'flavor': utils.json_render(FLAVOR, data, _details=True)}
+
+
+def show_flavor_extra(data):
+    return {'extra_specs': utils.json_render(FLAVOR_EXTRA, data)}
 
 
 # -----------------------------------------------------------------------------
