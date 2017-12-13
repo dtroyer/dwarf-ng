@@ -56,6 +56,11 @@ FLAVOR_RESP = """{
 }"""
 
 
+FLAVOR_EXTRA_RESP = """{
+    "extra_specs": {}
+}"""
+
+
 def list_flavors_resp(flavor, details=False):
     return {'flavors': [utils.json_render(FLAVOR_RESP, f, _details=details)
                         for f in flavor]}
@@ -63,6 +68,10 @@ def list_flavors_resp(flavor, details=False):
 
 def show_flavor_resp(flavor):
     return {'flavor': utils.json_render(FLAVOR_RESP, flavor, _details=True)}
+
+
+def show_flavor_extra_resp(flavor):
+    return {'flavor': utils.json_render(FLAVOR_REXTRA_ESP, flavor)}
 
 
 def create_flavor_resp(flavor):
@@ -99,6 +108,11 @@ class DwarfTestCase(utils.TestCase):
     def test_show_flavor(self):
         resp = self.app.get('/compute/v2.0/flavors/%s' % flavor1['id'],
                             status=200)
+        self.assertEqual(json.loads(resp.body), show_flavor_resp(flavor1))
+
+    def test_show_flavor_extra(self):
+        resp = self.app.get('/compute/v2.0/flavors/%s/os-extra_specs' %
+                            flavor1['id'], status=200)
         self.assertEqual(json.loads(resp.body), show_flavor_resp(flavor1))
 
     def test_delete_flavor(self):
