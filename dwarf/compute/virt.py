@@ -48,7 +48,7 @@ _LIBVIRT_DOMAIN_STATE = {
 
 
 def _name(sid):
-    return 'dwarf-%08x' % int(sid)
+    return 'dwarf-%s' % sid
 
 
 def _xml_snippet(name, enable):
@@ -87,7 +87,7 @@ def _create_domain_xml(server, flavor, force=False):
         xml_info = {
             'domain_type': CONF.libvirt_domain_type,
             'uuid': server['id'],
-            'name': _name(server['int_id']),
+            'name': _name(server['name']),
             'memory': int(flavor['ram']) * 1024,
             'vcpus': flavor['vcpus'],
             'basepath': basepath,
