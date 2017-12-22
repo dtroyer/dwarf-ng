@@ -1,3 +1,16 @@
+v0.2.3-dt2
+  * Updates to Makefile for build/package/run steps
+  * Create libvirt domains using server name
+  * Add RHEL/CentOS systemd unit file
+  * Make network name configurable
+  * Handle image list marker argument
+  * Add metadata key to GET /server response
+  * Add support for flavor extra_specs
+  * Collapse the different API servers into a single instance
+  * Add a simple script for running dwarf in test mode
+  * config: Change the default libvirt bridge IP
+  * dwarf.env: Set OS_PROJECT_NAME instead of OS_PROJECT_ID
+
 v0.2.3
   * Fix the tools/scripts that build a debian package
   * Fix the tools/scripts for creating releases
