@@ -72,6 +72,7 @@ SERVER_RESP = """{
         "key_name": "None",
         "name": "Test server 1",
         "status": "building",
+        "metadtad": {},
         "updated_at": "2001-02-03 04:05:06"
     }
 }"""

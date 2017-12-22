@@ -162,7 +162,8 @@ SERVER = """{
     },
     "key_name": "{{key_name}}",
     "name": "{{name}}",
-    "status": "{{status}}"
+    "status": "{{status}}",
+    "metadata": {}
 }"""
 
 
