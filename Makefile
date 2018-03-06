@@ -17,9 +17,7 @@
 # Destination branch for build
 BUILD=local
 BRANCHES=flavor-extra \
-	image-marker \
 	server-metadata \
-	compute-network \
 	dt-virt-name \
 	dt-makefile
 
