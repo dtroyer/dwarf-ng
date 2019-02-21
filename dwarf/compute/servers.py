@@ -338,6 +338,64 @@ class Controller(object):
 
         self.start(server_id)
 
+    def rebuild(self, server_id, server=None):
+        """
+        Rebuild a server
+        """
+        LOG.info('rebuild(server_id=%s, server=%s)', server_id, server)
+
+        db_server = self.db.servers.show(id=server_id)
+        flavor_id = db_server['flavor_id']
+        key_name = db_server.get('key_name', None)
+
+        image_id = server['imageRef']
+        config_drive = server.get('config_drive', False)
+
+        # Get the associated image and keypair
+        image = self.images.show(image_id)
+        flavor = self.flavors.show(flavor_id)
+        if key_name is None:
+            keypair = None
+        else:
+            keypair = self.keypairs.show(key_name)
+
+        self.stop(server_id, hard=False)
+
+        # Check the status of the server
+        server = self.db.servers.show(id=server_id)
+        for dummy in range(0, CONF.server_soft_reboot_timeout / 2):
+            server = self._update_status(server)
+            if server['status'] != SERVER_ACTIVE:
+                break
+            time.sleep(2)
+
+        # Shut the server down hard if it ignored the soft request
+        if server['status'] == SERVER_ACTIVE:
+            self.stop(server_id, hard=True)
+            time.sleep(2)
+
+        # Force re-creation of server disk
+        server_disk = os.path.join(CONF.instances_dir, server_id, 'disk')
+        if os.path.exists(server_disk):
+            os.remove(server_disk)
+        server_disk_local = os.path.join(CONF.instances_dir, server_id,
+                                         'disk.local')
+        if os.path.exists(server_disk_local):
+            os.remove(server_disk_local)
+
+        _create_disks(db_server, image, flavor)
+
+        server_disk_config = os.path.join(CONF.instances_dir, server_id,
+                                          'disk.config')
+        if os.path.exists(server_disk_config):
+            os.remove(server_disk_config)
+
+        _create_config_drive(db_server, keypair)
+
+        self.start(server_id)
+
+        return self._update_status(db_server)
+
     def show(self, server_id):
         """
         Show server details
