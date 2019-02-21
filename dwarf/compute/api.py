@@ -224,6 +224,13 @@ def _route_servers_id_action(server_id):
         SERVERS.reboot(server_id, hard)
         return
 
+    # nova rebuild
+    elif 'rebuild' in body:
+        body = json.load(bottle.request.body)
+        return api_response.show_server(
+            SERVERS.rebuild(server_id, body['rebuild'])
+        )
+
     raise exception.BadRequest(reason='Unsupported request')
 
 
