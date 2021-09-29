@@ -27,15 +27,15 @@ def get_version():
 
 
 setuptools.setup(
-    name='dwarf',
+    name='dwarf-ng',
     version=get_version(),
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
     package_data={'': ['*.xml']},
     scripts=['bin/dwarf', 'bin/dwarf-manage'],
 
-    author='Juerg Haefliger',
-    author_email='juergh@gmail.com',
+    author='Dean Troyer',
+    author_email='dtroyer@gmail.com',
     description='OpenStack API on top of libvirt/kvm',
     license='Apache License 2.0',
-    url='https://github.com/juergh/dwarf'
+    url='https://github.com/dtroyer/dwarf-ng'
 )

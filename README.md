@@ -1,9 +1,14 @@
-Dwarf
-=====
+Dwarf-NG
+========
 
 In a nutshell, dwarf is OpenStack API on top of local libvirt/KVM. It supports
 a subset of the Keystone, Glance and Nova APIs to manage images and instances
 on the local machine.
+
+Dwarf-NG is a fork of the original juergh/dwarf project with outstanding PRs
+and additional enhancements merged.  Dwarf-NG is still a little behind the times
+as it is still Python 2 but I'm using it so I want to keep my current version
+in a central place.
 
 
 Restrictions
@@ -35,54 +40,51 @@ $ export OS_USERNAME=dwarf-user
 $ export OS_PASSWORD=dwarf-password
 
 
-Supported OpenStack CLI commands
---------------------------------
+Supported OpenStackClient CLI commands
+--------------------------------------
 
 At the moment, the following commands are supported:
 
-keystone token-get
-keystone catalog
+token issue
+catalog list
 
-glance image-create
-glance image-delete
-glance image-list
-glance image-show
-glance image-update
+flavor create
+flavor delete
+flavor list
+flavor show
 
-nova flavor-create
-nova flavor-delete
-nova flavor-list
-nova flavor-show
+image create
+image delete
+image list
+image set
+image show
 
-nova image-list
-nova image-show
+keypair create
+keypair delete
+keypair list
+keypair show
 
-nova keypair-add
-nova keypair-delete
-nova keypair-list
-nova keypair-show
-
-nova boot
-nova console-log
-nova delete
-nova list
-nova reboot
-nova show
+server create
+server delete
+server list
+server reboot
+server rebuild
+server show
 
 
 Notes
 -----
 
 Default compute flavors are automatically added, check them with:
-$ nova flavor-list
+$ openstack flavor list
 
 Before you can boot an instance, you need to add an image and a keypair:
-$ nova keypair-add <key name>
-$ glance image-create --name 'My Image Name' --file <image filename>
+$ openstack keypair create <key-name>
+$ openstack image create --file <image-filename> <image-name>
 
-When booting an instance, the instance will receive a DHCP IP address from
+When booting a server, the server will receive a DHCP IP address from
 libvirt's dnsmasq. It takes a bit until that happens, check the status with:
-$ nova show <instance ID or name>
+$ openstack server show <server-name-or-id>
 
 
 Debugging
