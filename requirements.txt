@@ -1,4 +1,4 @@
 bottle
 cryptography
-libvirt-python
+libvirt-python==4.5.0
 pyYaml
